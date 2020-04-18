@@ -1,17 +1,109 @@
 <!-----------------------------------------------------------------------------
 Author:  Jesse Shewfelt
 Updated: 28/03/2020
+
+https://codepen.io/mburnette/pen/LxNxNg
 ------------------------------------------------------------------------------>
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Reversi</title>
-        <link rel="stylesheet" href="reversi.html">
-    </head>
-    <body>
-        
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-        <script src="/socket.io/socket.io.js"></script>
-        <script src="reversi.js"></script>
-    </body>
+
+<head>
+    <title>Reversi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="reversi.css">
+</head>
+
+<body class="light">
+    <div id="menu" class="menu-click light">
+        <ul>
+            <li class="menu-click menu-btn connect">Direct Connect</li>
+            <li class="menu-click menu-btn matchmaking">Matchmaking</li>
+            <li class="menu-click menu-btn settings">Settings</li>
+            <li class="menu-click menu-btn instructions">Instructions</li>
+        </ul>
+    </div>
+
+    <div id="display">
+
+        <div id="title">
+            <h1>REVERSI</h1>
+            <h3>Welcome Player</h3>
+        </div>
+
+
+        <div id="connect" class="popout connect hidden">
+            <div id="host" class="section">
+                <h1>Host a Game</h1>
+                <input id="host-id" type="text" class="textbox" readonly/>
+                <button id="host-btn" class="btn play-click">Start</button>
+            </div>
+
+            <div id="join" class="section">
+                <h1>Join a Game</h1>
+                <input id="join-id" type="text" class="textbox" placeholder="Enter ID"/>
+                <button id="host-btn" class="btn play-click">Join</button>
+            </div>
+
+        </div>
+
+        <div id="matchmaking" class="popout matchmaking hidden">
+            <div id="match" class="section">
+                <h1>Find an Opponent</h1>
+                <button id="host-btn" class="btn play-click">Play</button>
+            </div>
+        </div>
+
+        <div id="settings" class="popout settings hidden">
+            <div id="name" class="section">
+                <h1>Username</h1>
+                <input type="text" class="textbox" placeholder="Username"/>
+            </div>
+
+            <div id="colors" class="section">
+                <h1>Color Theme</h1>
+                <div>
+                    <div class="toggle">
+                        <input id="light-dark" type="checkbox" />
+                        <label>Light</label>
+                    </div>
+
+                    <div class="toggle">
+                        <label>Basic</label>
+                        <input id="basic-chromatic" type="checkbox" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="instructions" class="popout instructions hidden">
+            <div id="instruct" class="section">
+                <h1>Instructions</h1>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- GAME BOARD -->
+    <div id="game" class="grid hidden">
+        <div id="nav">
+            <button class="nav-btn">Name</button>
+            <button class="nav-btn">Theme</button>
+            <button class="nav-btn">Exit</button>
+        </div>
+        <div id="player-them" class="player"><h1>Opponent</h1></div>
+        <div id="player-me" class="player"><h1>Player</h1></div>
+        <div id="help"><h1>Waiting for Opponent</h1></div>
+        <div id="scores">
+            <h1 id="score-them">17</h1>
+            <h1 id="score-me">17</h1>
+        </div>
+        <div id="board" class="grid"></div>
+    </div>
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="reversi.js"></script>
+</body>
+
 </html>

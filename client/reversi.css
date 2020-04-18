@@ -1,8 +1,434 @@
 /******************************************************************************
 Author:  Jesse Shewfelt
 Updated: 28/03/2020
+
+dope palette: https://i.redd.it/aepphltiqy911.png
+
+sources:
+lots of basic stuff: https://www.youtube.com/watch?v=rXuHGLzSmSE
+flex: https://css-tricks.com/snippets/css/a-guide-to-flexbox/
+overlapping divs: https://stackoverflow.com/questions/25409604/overlay-that-covers-only-parent-div
 ******************************************************************************/
-body, html{
+:root{
+    --fade-in: 0s;
+    --transition: 0.15s;
+
+    --white: white;
+    --gray0: hsl(0, 0%, 92%);
+    --gray1: hsl(0, 0%, 86%);
+    --gray2: hsl(0, 0%, 80%);
+    --gray3: hsl(0, 0%, 74%);
+    --gray4: hsl(0, 0%, 68%);
+    --gray5: hsl(0, 0%, 62%);
+    --gray6: hsl(0, 0%, 56%);
+    --gray7: hsl(0, 0%, 50%);
+    --darkgray0: hsl(0, 0%, 44%);
+    --darkgray1: hsl(0, 0%, 38%);
+    --darkgray2: hsl(0, 0%, 32%);
+    --darkgray3: hsl(0, 0%, 26%);
+    --darkgray4: hsl(0, 0%, 20%);
+    --darkgray5: hsl(0, 0%, 14%);
+    --darkgray6: hsl(0, 0%, 8%);
+    --darkgray7: hsl(0, 0%, 2%);
+    --black: black;
+
+    --shade: 275;
+    --plain: var(--gray0);
+    --vibrant: hsl(var(--shade), 50%, 50%);
+    --test: hsl(246, 30%, 80%);
+}
+
+.chromatic{
+    --white: white;
+    --gray0: hsl(var(--shade), 30%, 92%);
+    --gray1: hsl(var(--shade), 32%, 86%);
+    --gray2: hsl(var(--shade), 34%, 80%);
+    --gray3: hsl(var(--shade), 36%, 74%);
+    --gray4: hsl(var(--shade), 38%, 68%);
+    --gray5: hsl(var(--shade), 40%, 62%);
+    --gray6: hsl(var(--shade), 42%, 56%);
+    --gray7: hsl(var(--shade), 46%, 50%);
+    --darkgray0: hsl(var(--shade), 54%, 44%);
+    --darkgray1: hsl(var(--shade), 60%, 38%);
+    --darkgray2: hsl(var(--shade), 66%, 32%);
+    --darkgray3: hsl(var(--shade), 72%, 26%);
+    --darkgray4: hsl(var(--shade), 78%, 20%);
+    --darkgray5: hsl(var(--shade), 84%, 14%);
+    --darkgray6: hsl(var(--shade), 90%, 8%);
+    --darkgray7: hsl(var(--shade), 96%, 2%);
+    --black: black;
+}
+
+.light{
+    --bg00: var(--gray0);
+    --bg01: var(--gray3);
+    --bg1: var(--gray2);
+    --bg2: var(--gray3);
+    --bg3: var(--gray4);
+    --bg4: var(--gray5);;
+    --text0: var(--black);
+    --text1: ;
+    --button: var(--gray2);
+    --highlight: var(--gray5);
+}
+
+.dark{
+    --bg00: var(--darkgray4);
+    --bg01: var(--darkgray7);
+    --bg1: var(--darkgray2);
+    --bg2: var(--darkgray3);
+    --bg3: var(--darkgray4);
+    --bg4: var(--darkgray6);;
+    --text0: var(--white);
+    --text1: ;
+    --button: var(--darkgray6);
+    --highlight: var(--darkgray2);
+}
+
+*{
     margin: 0;
     padding: 0;
 }
+
+h1{
+    text-align: center;
+}
+
+body{
+    font-family: 'Montserrat', sans-serif;
+
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    background-image: linear-gradient(90deg, var(--bg00), var(--bg01));
+    color: var(--text0);
+    transition: color 0.5s;
+    display: flex;
+}
+
+/* Title menu */
+
+#menu{
+    flex-grow: 1;
+    height: 100%;
+}
+
+#menu ul{
+    height: 100%;
+
+    display:  flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.menu-btn{
+    /* background-color: var(--button); */
+    transition: background-color 0.5s;
+    border: 2px solid currentColor;
+    width: 60%;
+    height: 4em;
+    border-radius: 0.5em;
+    cursor: pointer;
+
+    display:  flex;
+    justify-content: center;
+    align-items: center;
+    list-style: none;
+}
+
+.menu-btn:hover{
+    background-color: var(--highlight);
+}
+
+#display{
+    position: relative;
+    flex-basis: 65%;
+    height: 100%;
+}
+
+#title{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+
+/* Pop-out menus */
+
+.popout{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+
+    visibility: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    margin-left: -8%;
+    padding-left: 8%;
+}
+
+.visible {
+    z-index: 1;
+    visibility: visible;
+    opacity: 1;
+    transition: clip-path 0.5s ease-in-out, opacity var(--fade-in) linear; 
+    /* transition-property: background-color, color, clip-path, opacity;
+    transition-duration: var(--transition), var(--transition), var(--transition), var(--fade-in);
+    transition-timing-function: ease, ease, ease-in-out, linear; */
+}
+
+.hidden {
+    z-index: 2;
+    visibility: hidden;
+    opacity: 0;
+    /* transition: clip-path 0.5s ease-in-out, visibility 0s 0.15s, opacity 0.15s linear; */
+    transition-property: clip-path, visibility, opacity;
+    transition-duration: 0.5s, 0s, 0.15s;
+    transition-delay: 0s, 0.15s, 0s;
+    transition-timing-function: ease-in-out, ease, linear;
+    /* transition-property: background-color, color, clip-path, opacity, visibility;
+    transition-duration: var(--transition), var(--transition), var(--transition), var(--fade-in), 0s;
+    transition-delay: 0s, 0s, 0s, 0s, var(--transition);
+    transition-timing-function: ease, ease, ease-in-out, linear, ease; */
+}
+
+#connect{
+    background-color: var(--bg1);
+}
+
+#matchmaking{
+    background-color: var(--bg2);
+}
+
+#settings{
+    background-color: var(--bg3);
+}
+
+#instructions{
+    background-color: var(--bg4);
+}
+
+.section{
+    width: 100%;
+    height: 20%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.textbox{
+    background-color: var(--bg01);
+    color: var(--text0);
+    font-size: large;
+    text-align: center;
+    border: 1px solid;
+    outline: none;
+    border-radius: 5px;
+    height: 3em;
+    width: 50%;
+}
+
+.btn{
+    background-color: var(--bg01);
+    transition: background-color var(--transition);
+    color: var(--text0);
+    font-size: large;
+    text-align: center;
+    border: 1px solid;
+    outline: none;
+    border-radius: 3em;
+    height: 3em;
+    width: 50%;
+
+    cursor: pointer;
+}
+
+.btn:hover{
+    background-color: var(--bg00);
+}
+
+
+
+
+#colors > div{
+    width: 50%;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.toggle{
+    display: flex;
+    align-items: center;
+}
+
+.toggle label{
+    padding: 5px;
+}
+
+.toggle input{
+    -webkit-appearance: none;
+    border: 2px solid black;
+    border-radius: 3em;
+    width: 3em;
+    height: 3em;
+    cursor: pointer;
+    transition: background-color 0.25s;
+}
+
+#light-dark, #light-dark:checked:hover{
+    background-color: var(--gray2);
+}
+
+#light-dark:checked, #light-dark:hover{
+    background-color: var(--gray6);
+}
+
+#basic-chromatic, #basic-chromatic:checked:hover{
+    background-color: var(--plain);
+}
+
+#basic-chromatic:checked, #basic-chromatic:hover{
+    background-color: var(--vibrant);
+}
+
+
+
+.grid{
+    width: 100%;
+    height: 100%;
+    background-color: beige;
+    display: grid;
+    justify-items: center;
+    align-items: center;
+    gap: 1px;
+}
+
+.space{
+    background-color: var(--bg1);
+    transition: background-color 0.5s;
+    width: 4em;
+    height: 4em;
+    border-radius: 5px;
+
+    cursor: pointer;
+}
+
+.space:hover{
+    background-color: rgba(0, 128, 0, 0.9);
+}
+
+
+
+#game{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: linear-gradient(270deg, var(--bg00), var(--bg01));
+
+    grid-template-columns: min-content 25% min-content auto;
+    grid-template-rows: auto min-content auto;
+}
+
+#nav{
+    grid-column: 1;
+    grid-row: 1 / 4;
+
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+
+    background-color: var(--bg4);
+    border-right: 2px solid var(--text0);
+    width: 100%;
+    height: 100%;
+}
+
+.nav-btn{
+    background-color: var(--bg00);
+    transition: background-color var(--transition);
+    margin: 1em;
+    width: 4em;
+    height: 4em;
+    border: solid 2px var(--text0);
+    border-radius: 4em;
+
+    display: flex;
+    justify-content: center;
+    align-content: center;
+
+    cursor: pointer;
+}
+
+.nav-btn:hover{
+    background-color: var(--bg01);
+}
+
+.nav-btn:last-child{
+    margin-top: auto;
+}
+
+#player-them{
+    grid-column: 3;
+    grid-row: 1;
+}
+
+#player-me{
+    grid-column: 3;
+    grid-row: 3;
+}
+
+#help{
+    grid-column: 2;
+    grid-row: 2;
+}
+
+#scores{
+    grid-column: 4;
+    grid-row: 2;
+
+    height: 100%;
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+}
+
+#scores > h1{
+    height: 3em;
+    width: 3em;
+    border: 2px solid var(--text0);
+    border-radius: 3em;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#board{
+    grid-column: 3;
+    grid-row: 2;
+
+    padding: 10px;
+    border: 2px solid var(--text0);
+    border-radius: 10px;
+    background-color: var(--bg4);
+    
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+}
+
+

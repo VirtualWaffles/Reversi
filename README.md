@@ -16,15 +16,18 @@
 4. Launch clients by navigating to `<host ip>:<server port>` from a web browser
 
 # TODO
+Converge buttons in css
+icons for sidebar in game menu
+
 - [ ] instructions.txt
 
 - [ ] UI
-  - [ ] main menu
-  - [ ] game board
-  - [ ] color themes
-    - [ ] Light
-    - [ ] Dark
-    - [ ] Other
+  - [~] main menu
+  - [~] game board
+  - [x] color themes
+    - [x] Light
+    - [x] Dark
+    - [x] Other
 
 - [ ] username
   - [ ] random name from words
