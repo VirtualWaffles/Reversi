@@ -13,8 +13,8 @@ https://codepen.io/mburnette/pen/LxNxNg
     <link rel="stylesheet" href="reversi.css">
 </head>
 
-<body class="light">
-    <div id="menu" class="menu-click light">
+<body>
+    <div id="menu" class="menu-click">
         <ul>
             <li class="menu-click menu-btn connect">Direct Connect</li>
             <li class="menu-click menu-btn matchmaking">Matchmaking</li>
@@ -41,7 +41,7 @@ https://codepen.io/mburnette/pen/LxNxNg
             <div id="join" class="section">
                 <h1>Join a Game</h1>
                 <input id="join-id" type="text" class="textbox" placeholder="Enter ID"/>
-                <button id="host-btn" class="btn play-click">Join</button>
+                <button id="join-btn" class="btn play-click">Join</button>
             </div>
 
         </div>
@@ -49,25 +49,25 @@ https://codepen.io/mburnette/pen/LxNxNg
         <div id="matchmaking" class="popout matchmaking hidden">
             <div id="match" class="section">
                 <h1>Find an Opponent</h1>
-                <button id="host-btn" class="btn play-click">Play</button>
+                <button id="match-btn" class="btn play-click">Play</button>
             </div>
         </div>
 
         <div id="settings" class="popout settings hidden">
             <div id="name" class="section">
                 <h1>Username</h1>
-                <input type="text" class="textbox" placeholder="Username"/>
+                <input type="text" class="textbox username" placeholder="Username" text="Test"/>
             </div>
 
-            <div id="colors" class="section">
+            <div id="theme" class="section">
                 <h1>Color Theme</h1>
                 <div>
-                    <div class="toggle">
+                    <div id="brightness" class="toggle">
                         <input id="light-dark" type="checkbox" />
                         <label>Light</label>
                     </div>
 
-                    <div class="toggle">
+                    <div id="color" class="toggle">
                         <label>Basic</label>
                         <input id="basic-chromatic" type="checkbox" />
                     </div>
@@ -91,11 +91,11 @@ https://codepen.io/mburnette/pen/LxNxNg
             <button class="nav-btn">Exit</button>
         </div>
         <div id="player-them" class="player"><h1>Opponent</h1></div>
-        <div id="player-me" class="player"><h1>Player</h1></div>
+        <div id="player-me" class="player"><h1 class="username">Player</h1></div>
         <div id="help"><h1>Waiting for Opponent</h1></div>
         <div id="scores">
-            <h1 id="score-them">17</h1>
-            <h1 id="score-me">17</h1>
+            <h1 id="score-them">0</h1>
+            <h1 id="score-me">0</h1>
         </div>
         <div id="board" class="grid"></div>
     </div>

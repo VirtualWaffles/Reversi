@@ -38,6 +38,30 @@ overlapping divs: https://stackoverflow.com/questions/25409604/overlay-that-cove
     --test: hsl(246, 30%, 80%);
 }
 
+.light{
+    --bg00: var(--gray0);
+    --bg01: var(--gray3);
+    --bg1: var(--gray2);
+    --bg2: var(--gray3);
+    --bg3: var(--gray4);
+    --bg4: var(--gray5);;
+    --text0: var(--black);
+    --button: var(--gray2);
+    --highlight: var(--gray5);
+}
+
+.dark{
+    --bg00: var(--darkgray4);
+    --bg01: var(--darkgray7);
+    --bg1: var(--darkgray2);
+    --bg2: var(--darkgray3);
+    --bg3: var(--darkgray4);
+    --bg4: var(--darkgray6);;
+    --text0: var(--white);
+    --button: var(--darkgray6);
+    --highlight: var(--darkgray2);
+}
+
 .chromatic{
     --white: white;
     --gray0: hsl(var(--shade), 30%, 92%);
@@ -59,35 +83,10 @@ overlapping divs: https://stackoverflow.com/questions/25409604/overlay-that-cove
     --black: black;
 }
 
-.light{
-    --bg00: var(--gray0);
-    --bg01: var(--gray3);
-    --bg1: var(--gray2);
-    --bg2: var(--gray3);
-    --bg3: var(--gray4);
-    --bg4: var(--gray5);;
-    --text0: var(--black);
-    --text1: ;
-    --button: var(--gray2);
-    --highlight: var(--gray5);
-}
-
-.dark{
-    --bg00: var(--darkgray4);
-    --bg01: var(--darkgray7);
-    --bg1: var(--darkgray2);
-    --bg2: var(--darkgray3);
-    --bg3: var(--darkgray4);
-    --bg4: var(--darkgray6);;
-    --text0: var(--white);
-    --text1: ;
-    --button: var(--darkgray6);
-    --highlight: var(--darkgray2);
-}
-
 *{
     margin: 0;
     padding: 0;
+    overflow-x: hidden;
 }
 
 h1{
@@ -259,7 +258,7 @@ body{
 
 
 
-#colors > div{
+#theme > div{
     width: 50%;
     display: flex;
     justify-content: space-evenly;
@@ -306,7 +305,7 @@ body{
 .grid{
     width: 100%;
     height: 100%;
-    background-color: beige;
+    /* background-color: beige; */
     display: grid;
     justify-items: center;
     align-items: center;
@@ -320,14 +319,34 @@ body{
     height: 4em;
     border-radius: 5px;
 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.valid:hover{
+    /* background-color: rgba(0, 128, 0, 0.9); */
+    outline: 2px solid black;
     cursor: pointer;
 }
 
-.space:hover{
-    background-color: rgba(0, 128, 0, 0.9);
+.token{
+    border-radius: 3.5em;
+    width: 3.5em;
+    height: 3.5em;
 }
 
+.tokenb{
+    background-color: var(--darkgray6);
+    color: var(--gray1);
+    border-color: currentColor;
+}
 
+.tokenw{
+    background-color: var(--gray1);
+    color: var(--darkgray6);
+    border-color: currentColor;
+}
 
 #game{
     position: absolute;
@@ -361,6 +380,7 @@ body{
     margin: 1em;
     width: 4em;
     height: 4em;
+    color: var(--text0);
     border: solid 2px var(--text0);
     border-radius: 4em;
 
