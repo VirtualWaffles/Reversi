@@ -1,0 +1,28 @@
+1. Install Node.js and NPM
+2. `$npm install express socket.io`
+3. Launch the server with `$node ./server.js`
+4. Launch clients by navigating to `<host ip>:<server port>` from a web browser
+
+Connecting via code can be done from the "Direct Connect" option.
+Connecting to random opponents can be done from the "Matchmaking" option.
+Your name and color theme can be changed from the "Settings" option.
+The color theme may also be changed form the top left corner of any active game.
+
+TESTED ONLY ON WINDOWS MACHINE IN GOOGLE CHROME
+
+Known Issues:
+- This is the single most hideous amalgamation of code that I have ever brought into existence.
+- Color theme buttons have the wrong color when loading a theme from a cookie
+- Names with weird characters dont work well as cookies and it doesnt check for alphanumeric
+- Additionally, much of the UI is quite ugly. Css is a nightmare and I left this project really late. This includes:
+    - Generally horrid color themes
+    - Lack of contrast between items
+    - One plain font used everywhere
+    - No icons on buttons
+    - Lack of feedback on menu buttons
+    - Lack of feedback when failing to join a game
+    - Buttons in game sidebar being ugly
+    - No name change button in game sidebar
+    - Game sidebar has no labels and doesnt open on hover like I wanted
+    - For some reason my cool clip-path stuff on the menu is gone
+    
