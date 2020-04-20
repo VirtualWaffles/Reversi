@@ -9,7 +9,7 @@ $(document).ready(function(){
     let socket = io();
     let id;
 
-    let board;
+    let my_lobby;
     let my_color;
 
     // let board = new Array(2);
@@ -64,15 +64,15 @@ $(document).ready(function(){
 
     //Toggle color themes
     $(".toggle input").click(function(){
-        if(this.id === "light-dark"){
-            if($(this).siblings("label").text() === "Light")
+        if(this.classList.contains("light-dark")){
+            if($("#brightness").children("label").text() === "Light")
                 set_theme("dark", "");    
             else
                 set_theme("light", "");    
         }
 
-        else if(this.id === "basic-chromatic"){
-            if($(this).siblings("label").text() === "Basic")
+        else if(this.classList.contains("basic-chromatic")){
+            if($("#color").children("label").text() === "Basic")
                 set_theme("", "chromatic");    
             else
                 set_theme("", "basic");    
@@ -84,6 +84,7 @@ $(document).ready(function(){
         if($(this).text() === "Exit"){
             $("#game").toggleClass("hidden");
             $("#game").toggleClass("visible"); 
+            socket.emit('quit', {id:my_lobby});
             //reset game state         
         }
     });
@@ -104,7 +105,15 @@ $(document).ready(function(){
 
 
 
-
+    $(".space").click(function(){
+        if(this.classList.contains("valid")){
+            let space = {
+                x:this.id[1],
+                y:this.id[2]
+            }
+            socket.emit('play', {id:my_lobby, color:my_color, space:space});
+        }
+    });
 
 
 
@@ -120,12 +129,13 @@ $(document).ready(function(){
     });
 
 
-    socket.on('enter', function(color){
+    socket.on('enter', function(data){
         //hacky fade in fix
         document.documentElement.style.setProperty("--fade-in", "0.15s");
         $("#game").toggleClass("hidden");
         $("#game").toggleClass("visible");
-        my_color = color;
+        my_lobby = data.id;
+        my_color = data.color;
         if(my_color === 'b'){
             $("#score-me").css("background-color","var(--darkgray6)");
             $("#score-me").css("color","var(--gray1)");
@@ -138,49 +148,66 @@ $(document).ready(function(){
             $("#score-me").css("background-color","var(--gray1)");
             $("#score-me").css("color","var(--darkgray6)");
         }
-        $("#help").innerHTML = "Waiting for opponent";
+        $("#player-them h1").html("Opponent");
+        $("#help").html("Waiting for opponent");
     });
 
 
     socket.on('started', function(data){
         console.log(`Game between ${data.b} and ${data.w} started`)
-        board = data.board;
+        // board = data.board;
         let them = 'b';
         if(my_color === 'b')
             them = 'w'
 
-        console.log(data[them]);
         $("#player-them h1").html(data[them]);
         update(data.game);
-        //call update function with board data to start game
-        //set scores
-        //game actually begins
-        //set tokens and stuff
-        //
+        $("#help").html(`Game Started! ${data.b}'s move.`);
     });
     
 
-    socket.on('update', function(data){
-        //udpate game state
-        //update help text
+    socket.on('update', function(game){
+        update(game);
     });
 
+    socket.on('invalid', function(data){
+        $("#help").html("That move is invalid. Please make a valid move.");
+    });
+
+    socket.on('not-turn', function(data){
+        $("#help").html(`Please wait for ${$("#player-them h1").html()} to make a move.`);
+    });
+
+    socket.on('game-over', function(player){
+        if(player === 'q')
+            $("#help").html(`Game over! ${$("#player-them h1").html()} forfeit.`);
+        else if(player === 't')
+            $("#help").html("Game over! It's a tie!");
+        else if(player === my_color)
+            $("#help").html(`You Win! Congradulations ${$("#player-me h1").html()}!`);
+        else
+            $("#help").html(`Game over! The winner is ${$("#player-them h1").html()}!`);
+        socket.emit('leave', {id:my_lobby});
+    });
 
     //given a game state updates the local game state
     function update(game){
-        /*
-        if game over update help and disable turns
-
-        for each space
-        if the matching space in the game has a token
-        add a token class to that element
-        if its valid for my color add a valid class
-        */
-
         let spaces = $(".space");
         for(let space of spaces){
             set_space(space, game.board)
         }
+
+        let other = 'b'
+        if(my_color === 'b'){
+            other = 'w'
+        }
+        $("#score-me").html(game.score[my_color]);
+        $("#score-them").html(game.score[other]);
+
+        if(game.turn === my_color)
+            $("#help").html(`${$("#player-me h1").html()}'s move.`);
+        else
+            $("#help").html(`${$("#player-them h1").html()}'s move.`);
     };
 
     function set_space(space, board){
@@ -216,7 +243,7 @@ $(document).ready(function(){
         }
 
         let cookie =  ($("#brightness").children("label").text() + "-" + $("#color").children("label").text()).toLowerCase();
-        // document.cookie = 'theme=' + cookie + '; max-age=' + 60*60*24 + ';';
+        document.cookie = 'theme=' + cookie + '; max-age=' + 60*60*24 + ';';
     };
 
     function set_name(name){
@@ -228,12 +255,12 @@ $(document).ready(function(){
             else if(o.nodeName === "INPUT")
                 $(o).val(name);
         }
-        // document.cookie = 'username=' + name + '; max-age=' + 60*60*24 + ';';
+        document.cookie = 'username=' + name + '; max-age=' + 60*60*24 + ';';
     };
 
     function set_id(newid){
         id = newid;
         $("#host-id").val(id);
-        // document.cookie = 'id=' + newid + '; max-age=' + 60*60*24 + ';';
+        document.cookie = 'id=' + newid + '; max-age=' + 60*60*24 + ';';
     };
 });

@@ -106,6 +106,13 @@ body{
 }
 
 /* Title menu */
+#title h3{
+    font-size: 3em;
+}
+#title h1{
+    font-size: 8em;
+}
+
 
 #menu{
     flex-grow: 1;
@@ -157,6 +164,26 @@ body{
 
 
 /* Pop-out menus */
+#connect{
+    background-color: var(--bg1);
+}
+
+#matchmaking{
+    background-color: var(--bg2);
+}
+
+#settings{
+    background-color: var(--bg3);
+}
+
+#instructions{
+    background-color: var(--bg4);
+}
+
+#instructions p{
+    text-align: center;
+    width: 80%;
+}
 
 .popout{
     display: flex;
@@ -188,32 +215,21 @@ body{
     z-index: 2;
     visibility: hidden;
     opacity: 0;
-    /* transition: clip-path 0.5s ease-in-out, visibility 0s 0.15s, opacity 0.15s linear; */
-    transition-property: clip-path, visibility, opacity;
+    transition: clip-path 0.5s ease-in-out, visibility 0s 0.15s, opacity 0.15s linear;
+    /* transition-property: clip-path, visibility, opacity;
     transition-duration: 0.5s, 0s, 0.15s;
     transition-delay: 0s, 0.15s, 0s;
-    transition-timing-function: ease-in-out, ease, linear;
+    transition-timing-function: ease-in-out, ease, linear; */
     /* transition-property: background-color, color, clip-path, opacity, visibility;
     transition-duration: var(--transition), var(--transition), var(--transition), var(--fade-in), 0s;
     transition-delay: 0s, 0s, 0s, 0s, var(--transition);
     transition-timing-function: ease, ease, ease-in-out, linear, ease; */
 }
 
-#connect{
-    background-color: var(--bg1);
-}
 
-#matchmaking{
-    background-color: var(--bg2);
-}
 
-#settings{
-    background-color: var(--bg3);
-}
 
-#instructions{
-    background-color: var(--bg4);
-}
+
 
 .section{
     width: 100%;
@@ -284,21 +300,26 @@ body{
     transition: background-color 0.25s;
 }
 
-#light-dark, #light-dark:checked:hover{
+.light-dark, .light-dark:checked:hover{
     background-color: var(--gray2);
 }
 
-#light-dark:checked, #light-dark:hover{
+.light-dark:checked, .light-dark:hover{
     background-color: var(--gray6);
 }
 
-#basic-chromatic, #basic-chromatic:checked:hover{
+.basic-chromatic, .basic-chromatic:checked:hover{
     background-color: var(--plain);
 }
 
-#basic-chromatic:checked, #basic-chromatic:hover{
+.basic-chromatic:checked, .basic-chromatic:hover{
     background-color: var(--vibrant);
 }
+
+
+
+
+
 
 
 
@@ -326,7 +347,7 @@ body{
 
 .valid:hover{
     /* background-color: rgba(0, 128, 0, 0.9); */
-    outline: 2px solid black;
+    outline: 2px solid var(--text0);
     cursor: pointer;
 }
 
@@ -366,7 +387,7 @@ body{
 
     display: flex;
     flex-direction: column;
-    align-content: center;
+    align-items: center;
 
     background-color: var(--bg4);
     border-right: 2px solid var(--text0);
@@ -375,6 +396,15 @@ body{
 }
 
 .nav-btn{
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+.nav-btn:last-child{
+    margin-top: auto;
+}
+
+#exit-btn{
     background-color: var(--bg00);
     transition: background-color var(--transition);
     margin: 1em;
@@ -387,16 +417,13 @@ body{
     display: flex;
     justify-content: center;
     align-content: center;
+    margin-top: auto;
 
     cursor: pointer;
 }
 
-.nav-btn:hover{
+#exit-btn:hover{
     background-color: var(--bg01);
-}
-
-.nav-btn:last-child{
-    margin-top: auto;
 }
 
 #player-them{
@@ -410,6 +437,7 @@ body{
 }
 
 #help{
+    padding: 10px;
     grid-column: 2;
     grid-row: 2;
 }
@@ -450,5 +478,3 @@ body{
     grid-template-columns: repeat(8, 1fr);
     grid-template-rows: repeat(8, 1fr);
 }
-
-

@@ -26,8 +26,8 @@ https://codepen.io/mburnette/pen/LxNxNg
     <div id="display">
 
         <div id="title">
+            <h3>Welcome to</h3>
             <h1>REVERSI</h1>
-            <h3>Welcome Player</h3>
         </div>
 
 
@@ -63,13 +63,13 @@ https://codepen.io/mburnette/pen/LxNxNg
                 <h1>Color Theme</h1>
                 <div>
                     <div id="brightness" class="toggle">
-                        <input id="light-dark" type="checkbox" />
+                        <input class="light-dark" type="checkbox"/>
                         <label>Light</label>
                     </div>
 
                     <div id="color" class="toggle">
                         <label>Basic</label>
-                        <input id="basic-chromatic" type="checkbox" />
+                        <input class="basic-chromatic" type="checkbox"/>
                     </div>
                 </div>
             </div>
@@ -78,6 +78,10 @@ https://codepen.io/mburnette/pen/LxNxNg
         <div id="instructions" class="popout instructions hidden">
             <div id="instruct" class="section">
                 <h1>Instructions</h1>
+                <!-- http://www.flyordie.com/games/help/reversi/en/games_rules_reversi.html -->
+                <p>Each reversi piece is either dark or light. On your turn, you place one piece of your color on the board. You must place the piece so that an opponent's piece, or a row of opponent's pieces, is flanked by your pieces. All of the opponent's pieces between your pieces are then transformed to become your color.</p>
+                    
+                <p>The object of the game is to own more pieces than your opponent when the game is over. The game is over when neither player has a move. Usually, this means the board is full.</p>
             </div>
         </div>
     </div>
@@ -86,9 +90,13 @@ https://codepen.io/mburnette/pen/LxNxNg
     <!-- GAME BOARD -->
     <div id="game" class="grid hidden">
         <div id="nav">
-            <button class="nav-btn">Name</button>
-            <button class="nav-btn">Theme</button>
-            <button class="nav-btn">Exit</button>
+            <div class="toggle nav-btn">
+                <input type="checkbox" class="light-dark"/>
+            </div>
+            <div class="toggle nav-btn">
+                <input type="checkbox" class="basic-chromatic"/>
+            </div>
+            <button id="exit-btn" class="nav-btn">Exit</button>
         </div>
         <div id="player-them" class="player"><h1>Opponent</h1></div>
         <div id="player-me" class="player"><h1 class="username">Player</h1></div>

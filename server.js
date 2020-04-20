@@ -52,7 +52,6 @@ let public_room;
 io.on('connection', function(socket){
     
     welcome();
-
     //USER SETTING FUNCTIONS
     function welcome(){
         let cookies = socket.handshake.headers['cookie'];
@@ -163,44 +162,45 @@ io.on('connection', function(socket){
     });
 
     socket.on('quit', function(data){
-        //TODO handle host leaving
+        socket.leave(data.id);
+        io.in(data.id).emit('game-over', 'q'); 
+    });
+
+    socket.on('leave', function(data){
         socket.leave(data.id);
     });
 
-
     //handle a single turn of a game
     socket.on('play', function(data){
-        /*
-            check move is valid
-                if not respond error
-            update game board
-            check scores
-            swap turn
-            emit new state
+        if(rooms[data.id]){
+            let game = rooms[data.id].game;
 
-            a move consists of color and pair
-            board is 2d array
-            each position tracks
-                token: black white none
-                valid for black
-                valid for white
+            //not your turn
+            if(game.turn !== data.color)
+                socket.emit('not-turn');
+            
+            //invalid move
+            else if(!place(data.color, data.space, game))
+                socket.emit('invalid');
+            
+            //normal turn
+            else{
+                if(game.turn === 'b')
+                    game.turn = 'w';
+                else
+                    game.turn = 'b';
+                io.in(data.id).emit('update', game);
+            }
 
-            board = [[{token:none, b:false, w:false},{},{}] ]
-        */
-        let game = rooms[data.id].game;
-        //not your turn
-        if(!game.turn[data.color])
-            socket.emit('invalid');
-        
-        //invalid move
-        if(!place(data.color, data.space, game.board))
-            socket.emit('invalid');
-        
-        //all good, update turn and share new game state
-        else{
-            game.turn.b = !game.turn.b;
-            game.turn.w = !game.turn.w;
-            io.in(data.id).emit('update', game);
+            //game over
+            if(game.valid.b === 0 && game.valid.w === 0){
+                if(game.score.b === game.score.w)
+                    io.in(data.id).emit('game-over', 't');
+                else if(game.score.b > game.score.w)
+                    io.in(data.id).emit('game-over', 'b');
+                else
+                    io.in(data.id).emit('game-over', 'w');
+            }
         }
     });
 
@@ -211,7 +211,7 @@ io.on('connection', function(socket){
             open: true,
             b: data.name,
         }        
-        socket.emit('enter', 'b');
+        socket.emit('enter', {id: data.id, color:'b'});
     };
 
     function join_game(socket, data){
@@ -220,7 +220,7 @@ io.on('connection', function(socket){
         rooms[data.id].open = false;
         rooms[data.id].w = data.name;
         rooms[data.id].game = new_game();
-        socket.emit('enter', 'w');
+        socket.emit('enter', {id: data.id, color:'w'});
         
         console.log(`Game between ${rooms[data.id].b} and ${rooms[data.id].w} started in lobby ${data.id}`)
         io.in(data.id).emit('started', rooms[data.id]);
@@ -228,18 +228,6 @@ io.on('connection', function(socket){
 
 
     function new_game(){
-        /*
-        GAME STRUCTURE
-        games consists of:
-        whos turn
-        scores
-            black
-            white
-        board which is 2d array of:
-            token at this space
-            is this space valid for black
-            is this space valid for white
-        */
         let board = new Array(XDIM);
         for(let i = 0; i < XDIM; i++){
             board[i] = new Array(YDIM);
@@ -255,28 +243,30 @@ io.on('connection', function(socket){
         board[midx-1][midy].token = 'b';
         board[midx  ][midy].token = 'w';
 
-        draw(board);
-        validate_all(board);
-        console.log("board validated");
-        return {turn:1, score:{b:2, w:2}, board:board};
+        // draw(board);
+        let game = {turn:'b', score:{b:2, w:2}, valid:{b:4, w:4}, board:board};
+        validate_all(game);
+        return game;
     }
 
 
     //GAME LOGIC
     //place a token in the given space and flip all required tokens
-    function place(color, space, board){
+    function place(color, space, game){
         //if spot invalid for this color
-        if(!board[place.x][place.y][color])
+        if(!game.board[space.x][space.y][color])
             return false;
         
-        board[place.x][place.y][token] = color;
-        flip_all(color, space, board);
-        validate_all(board);
+        game.board[space.x][space.y].token = color;
+        game.score[color] += 1;
+        flip_all(color, space, game);
+        validate_all(game);
+        // draw(game.board);
         return true;
     };
     
     //for each of eight direction flip all required tokens
-    function flip_all(color, space, board){
+    function flip_all(color, space, game){
         let ymod, xmod;
         for(let i = 0; i < 3; i++){
             xmod = (i % 3) - 1; //[-1, 0, 1]
@@ -284,22 +274,36 @@ io.on('connection', function(socket){
                 ymod = (j % 3) - 1; //[-1, 0, 1]
                 if(ymod === 0 && xmod === 0)
                     continue;
-                flip(color, space, board, xmod, ymod);
+                flip(color, space, game, xmod, ymod);
             }
         }
     };
 
     //flip all required tokens in the direction determined by xmod & ymod
-    function flip(color, space, board, xmod, ymod){
-        let x = space.x + xmod;
-        let y = space.y + ymod;
+    function flip(color, space, game, xmod, ymod){
+        //this type cast was an annoying bug
+        let x = parseInt(space.x) + xmod;
+        let y = parseInt(space.y) + ymod;
         let do_flip = false;
 
-        while(bounded()){
-            if(do_flip)
-                board[x][y].token = color;
+        let other = 'b';
+        if(color === 'b')
+            other = 'w';
+
+        while(bounded() && !(x == space.x && y == space.y)){
+            //empty space means no cap
+            if(!game.board[x][y].token)
+                return;
+
+            //on the way back flip tokens
+            if(do_flip){
+                game.board[x][y].token = color;
+                game.score[color] += 1;
+                game.score[other] -= 1;
+            }
+
             //upon finding a token of your color go back the other way flipping tokens
-            else if(board[x][y].token === color){
+            else if(game.board[x][y].token === color){
                 do_flip = true;
                 xmod *= -1;
                 ymod *= -1;
@@ -309,30 +313,31 @@ io.on('connection', function(socket){
         }
 
         function bounded(){
-            return (x < board.length &&
+            return (x < game.board.length &&
                     x >= 0 &&
-                    y < board[0].length &&
-                    y >= 0 &&
-                    (x != space.x || y != space.y)
+                    y < game.board[0].length &&
+                    y >= 0
                     )
         };
     }
 
     //for each space on the board set whether it is a valid space for both colors
-    function validate_all(board){
-        for(let i = 0; i < board.length; i++)
-            for(let j = 0; j < board[0].length; j++)
-                validate({x:i, y:j}, board);
+    function validate_all(game){
+        game.valid.b = 0;
+        game.valid.w = 0;
+        for(let i = 0; i < game.board.length; i++)
+            for(let j = 0; j < game.board[0].length; j++)
+                validate({x:i, y:j}, game);
     }
 
     //check whether this space is a valid move for both colors
-    function validate(space, board){
+    function validate(space, game){
         //assume not valid
-        board[space.x][space.y].b = false;
-        board[space.x][space.y].w = false;
+        game.board[space.x][space.y].b = false;
+        game.board[space.x][space.y].w = false;
         
         //if a tokens already there its not valid
-        if(board[space.x][space.y].token)
+        if(game.board[space.x][space.y].token)
             return;
 
         //look in each direction for lines of one color ending in the other
@@ -343,8 +348,8 @@ io.on('connection', function(socket){
                 ymod = (j % 3) - 1; //[-1, 0, 1]
                 if(ymod === 0 && xmod === 0)
                     continue;
-                is_valid(space, board, xmod, ymod);
-                if(board[space.x][space.y].b === true && board[space.x][space.y].w === true)
+                is_valid(space, game, xmod, ymod);
+                if(game.board[space.x][space.y].b === true && game.board[space.x][space.y].w === true)
                     return;
             }
         }        
@@ -352,16 +357,16 @@ io.on('connection', function(socket){
     };
 
     //look in a specific direction to check if there is a valid move for both colors
-    function is_valid(space, board, xmod, ymod){
+    function is_valid(space, game, xmod, ymod){
         let x = space.x + xmod;
         let y = space.y + ymod;
         if(!bounded())
             return;
         //only validity of non-neighbor color can be determined
         //if none space is empty or oob so skip
-        if(!board[x][y].token)
+        if(!game.board[x][y].token)
             return;
-        let color = board[x][y].token;
+        let color = game.board[x][y].token;
 
 
         //if the neighbor token is black were looking white cap and vice versa
@@ -370,16 +375,21 @@ io.on('connection', function(socket){
         else
             color = 'b';
             
+        //if its already a valid move for that color dont check again
+        if(game.board[space.x][space.y][color])
+            return;
+
         x += xmod;
         y += ymod;
         while(bounded()){
             //no token of this color in the line
-            if(!board[x][y].token)
+            if(!game.board[x][y].token)
                 return;
 
             //a line of opposite color exists capped by this color so this is a valid space for this color
-            if(board[x][y].token === color){
-                board[space.x][space.y][color] = true;
+            if(game.board[x][y].token === color){
+                game.board[space.x][space.y][color] = true;
+                game.valid[color] += 1;
                 return;
             }
 
@@ -389,9 +399,9 @@ io.on('connection', function(socket){
         }
 
         function bounded(){
-            return (x < board.length &&
+            return (x < game.board.length &&
                     x >= 0 &&
-                    y < board[0].length &&
+                    y < game.board[0].length &&
                     y >= 0)
         }
     };
@@ -403,8 +413,8 @@ io.on('connection', function(socket){
             process.stdout.write("\n| ");               
             for(let j = 0; j < YDIM; j++){
                 token = '.'
-                if(board[i][j].token)
-                    token = board[i][j].token;
+                if(board[j][i].token)
+                    token = board[j][i].token;
                 process.stdout.write(`${token} | `);
             }
         }
